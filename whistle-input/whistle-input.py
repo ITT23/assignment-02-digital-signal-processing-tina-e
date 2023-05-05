@@ -26,9 +26,10 @@ def on_draw():
     window.clear()
     # Convert audio data to numpy array
     data = np.frombuffer(stream.read(CHUNK_SIZE), dtype=np.int16)
-    whistling_input_device.update(data)
     menu.update(data)
     menu.draw()
+    # whistling as an input device is active as long as the menu window is open (minimized is ok)
+    whistling_input_device.update(data)
 
 
 @window.event

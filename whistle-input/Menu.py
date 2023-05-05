@@ -20,14 +20,26 @@ class Menu:
             self.menu_items.append(item)
 
     def up(self):
+        '''
+        set selected item to upper item
+        but selection stays the same if no item above
+        '''
         if self.selected_item < self.item_count-1:
             self.selected_item += 1
 
     def down(self):
+        '''
+        set selected item to lower item
+        but selection stays the same if no item below
+        '''
         if self.selected_item > 0:
             self.selected_item -= 1
 
     def update(self, data):
+        '''
+        handle frequency change by updating selected item
+        :param data: audio stream data
+        '''
         analyzer_result = self.analyzer.analyze_data(data)
         if analyzer_result == 'UP':
             self.up()

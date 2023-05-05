@@ -8,6 +8,10 @@ class WhistlingInputDevice:
         self.keyboard = Controller()
 
     def update(self, data):
+        '''
+        handle frequency change by updating simulating key events
+        :param data: audio stream data
+        '''
         analyzer_result = self.analyzer.analyze_data(data)
         if analyzer_result == 'UP':
             self.keyboard.press(Key.up)

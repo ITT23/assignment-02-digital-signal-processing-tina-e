@@ -13,17 +13,20 @@ class StreamAnalyzer:
         return freq
 
     def analyze_data(self, data):
+        '''
+        capture current frequency and compare it to previous
+        :param data: audio stream data
+        :return: (UP, DOWN or NONE) detected frequency change
+        '''
         current_freq = self.calculate_frequency(data)
-        len_frequencies = len(self.frequencies)
-
-        # filter silence
+        # filter silence / noise / non-typical whistling frequencies
         if current_freq <= 15 or current_freq > 100:
             self.silence += 1
             self.registration = []
             return
 
         # skip comparison if no frequency captured before
-        if len_frequencies != 0:
+        if len(self.frequencies) != 0:
             # if frequency higher than before
             if current_freq > self.frequencies[-1]:
                 self.registration.append('h')
@@ -38,6 +41,11 @@ class StreamAnalyzer:
         return self.handle_data_change()
 
     def handle_data_change(self):
+        '''
+        analyze registered frequency change patterns
+        if multiple registrations stored, the most occurring value it is
+        :return: (UP, DOWN or NONE) detected frequency change
+        '''
         len_registration = len(self.registration)
         if self.silence >= 5:
             self.silence = 0
