@@ -1,5 +1,6 @@
 from Menu import Menu
 from setup import setup
+from WhistlingInputDevice import WhistlingInputDevice
 import numpy as np
 import pyglet
 import pyaudio
@@ -18,25 +19,23 @@ WINDOW_HEIGHT = 500
 stream = setup(CHUNK_SIZE, FORMAT, CHANNELS, RATE)
 window = pyglet.window.Window(width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
 menu = Menu(WINDOW_WIDTH, WINDOW_HEIGHT)
-
+whistling_input_device = WhistlingInputDevice()
 
 @window.event
 def on_draw():
     window.clear()
     # Convert audio data to numpy array
     data = np.frombuffer(stream.read(CHUNK_SIZE), dtype=np.int16)
+    whistling_input_device.update(data)
     menu.update(data)
     menu.draw()
 
 
 @window.event
 def on_key_press(symbol, modifiers):
-    if symbol == pyglet.window.key.UP:
-        menu.up()
-    elif symbol == pyglet.window.key.DOWN:
-        menu.down()
-    elif symbol == pyglet.window.key.Q:
+    if symbol == pyglet.window.key.Q:
         sys.exit(0)
 
 
-pyglet.app.run()
+if __name__ == '__main__':
+    pyglet.app.run()
