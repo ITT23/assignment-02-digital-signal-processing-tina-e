@@ -1,6 +1,8 @@
 import pyaudio
 import numpy as np
 from matplotlib import pyplot as plt
+import pyglet
+import sys
 
 # Set up audio stream
 # reduce chunk size and sampling rate for lower latency
@@ -9,6 +11,12 @@ FORMAT = pyaudio.paInt16  # Audio format
 CHANNELS = 1  # Mono audio
 RATE = 44100  # Audio sampling rate (Hz)
 p = pyaudio.PyAudio()
+
+##############
+C2 = 65.41
+E2 = 82.41
+G2 = 98.00
+##############
 
 # print info about audio devices
 # let user select audio device
@@ -30,24 +38,47 @@ stream = p.open(format=FORMAT,
                 frames_per_buffer=CHUNK_SIZE,
                 input_device_index=input_device)
 
-# set up interactive plot
-fig = plt.figure()
-ax = plt.gca()
-line, = ax.plot(np.zeros(CHUNK_SIZE))
-ax.set_ylim(-30000, 30000)
 
-plt.ion()
-plt.show()
+WINDOW_WIDTH = 600
+WINDOW_HEIGHT = 780
 
-# continuously capture and plot audio singal
-while True:
-    # Read audio data from stream
+window = pyglet.window.Window(width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
+pyglet.gl.glClearColor(0.1, 0.6, 0.2, 0)
+rect = pyglet.shapes.Rectangle(x=50, y=50, width=50, height=50, color=(10,10,10))
+rectC4 = pyglet.shapes.Rectangle(x=150, y=C2*2, width=50, height=50, color=(100,10,10))
+rectE4 = pyglet.shapes.Rectangle(x=300, y=E2*2, width=50, height=50, color=(100,10,10))
+rectG4 = pyglet.shapes.Rectangle(x=450, y=G2*2, width=50, height=50, color=(100,10,10))
+
+@window.event
+def on_draw():
+    window.clear()
     data = stream.read(CHUNK_SIZE)
-
     # Convert audio data to numpy array
     data = np.frombuffer(data, dtype=np.int16)
-    line.set_ydata(data)
 
-    # Redraw plot
-    fig.canvas.draw()
-    fig.canvas.flush_events()
+    rect.draw()
+    rectC4.draw()
+    rectE4.draw()
+    rectG4.draw()
+    spectrum = np.abs(np.fft.fft(data))
+    freq = np.argmax(spectrum) * 10
+
+    print(freq)
+
+    rect.y = freq * 2
+    rect.x += 1
+    if (C2 + 5) >= freq >= (C2 - 5) and rectC4.x <= rect.x <= (rectC4.x + rectC4.width):
+        rectC4.color = (10, 200, 10)
+    if (E2 + 5) >= freq >= (E2 - 5) and rectE4.x <= rect.x <= (rectE4.x + rectE4.width):
+        rectE4.color = (10, 200, 10)
+    if (G2 + 5) >= freq >= (G2 - 5) and rectG4.x <= rect.x <= (rectG4.x + rectG4.width):
+        rectG4.color = (10, 200, 10)
+
+
+@window.event
+def on_key_press(symbol, modifiers):
+    if symbol == pyglet.window.key.Q:
+        sys.exit(0)
+
+
+pyglet.app.run()
