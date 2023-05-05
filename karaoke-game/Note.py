@@ -15,6 +15,9 @@ class Note:
         self.is_hit = is_hit
 
     def update(self):
+        '''
+        color note green if it is hit
+        '''
         if self.is_hit:
             self.body.color = self.hit_color
         else:

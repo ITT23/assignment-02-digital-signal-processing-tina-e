@@ -7,6 +7,7 @@ from pyglet import text, resource, sprite
 
 def calculate_frequency(data):
     spectrum = np.abs(np.fft.fft(data))
+    # get major frequency of spectrum
     freq = np.argmax(spectrum)
     return freq
 
@@ -17,16 +18,22 @@ def calculate_frequency(data):
 
 class Game:
     def __init__(self, window_width, window_height):
+        gui_factor = window_height / 100  # multiplied with y-pos of cursor and notes, it looks meh without
         self.game_state = -1
         self.intro_width = window_width / 8
         self.width = window_width - self.intro_width
         self.background = sprite.Sprite(img=resource.image('assets/background.jpg'))
-        self.pattern = SongPattern(self.intro_width, self.width, window_height / 100)
-        self.cursor = Cursor(window_height / 100)
+        self.pattern = SongPattern(self.intro_width, self.width, gui_factor)
+        self.cursor = Cursor(gui_factor)
         self.menu = Menu(window_width, window_height, self.background)
         self.score = text.Label("Score: 0", x=window_width - 50, y=window_height - 20, anchor_x='center', anchor_y='center')
 
     def update(self, data):
+        '''
+        if cursor is still within the window, update game based on frequency of audio input
+        otherwise: game finished, navigate to menu
+        :param data: audio stream data
+        '''
         if self.cursor.body.x + self.cursor.body.width > self.width + self.intro_width:
             self.game_state = 0
             self.cursor.reset()
@@ -38,6 +45,10 @@ class Game:
         self.score.text = f"Score: {self.pattern.score}"
 
     def draw(self):
+        '''
+        if game is running, draw game elements
+        otherwise: draw menu
+        '''
         if self.game_state == 1:
             self.background.draw()
             self.pattern.draw()

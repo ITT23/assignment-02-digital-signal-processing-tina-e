@@ -3,7 +3,7 @@ from pyglet import text
 
 class Menu:
     def __init__(self, win_w, win_h, background):
-        self.win_score = 300
+        self.win_score = 300  # minimum score to make the crowd cheering
         self.background = background
         self.welcome = text.Label('WELCOME!', font_size=40, x=win_w / 2, y=win_h / 1.8, anchor_x='center', anchor_y='center')
         self.winner = text.Label('YOU ROCK!', font_size=40, x=win_w / 2, y=win_h / 1.8, anchor_x='center', anchor_y='center')
