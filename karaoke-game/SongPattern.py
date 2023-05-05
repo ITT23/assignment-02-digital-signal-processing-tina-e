@@ -1,5 +1,6 @@
 from Note import Note
 
+# https://pages.mtu.edu/~suits/notefreqs.html
 FREQUENCY_D = 36.71
 FREQUENCY_C = 32.70
 FREQUENCY_A = 27.5
