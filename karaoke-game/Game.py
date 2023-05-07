@@ -1,17 +1,10 @@
 import os.path
-
 import numpy as np
+from scipy import signal
 from Cursor import Cursor
 from SongPattern import SongPattern
 from Menu import Menu
 from pyglet import text, resource, sprite
-
-
-def calculate_frequency(data):
-    spectrum = np.abs(np.fft.fft(data))
-    # get major frequency of spectrum
-    freq = np.argmax(spectrum)
-    return freq
 
 # background image:
 # Image by rawpixel.com on Freepik
@@ -29,6 +22,15 @@ class Game:
         self.cursor = Cursor(gui_factor)
         self.menu = Menu(window_width, window_height, self.background)
         self.score = text.Label("Score: 0", x=window_width - 50, y=window_height - 20, anchor_x='center', anchor_y='center')
+        self.kernel = signal.gaussian(10, 3)
+        self.kernel /= np.sum(self.kernel)
+
+    def calculate_frequency(self, data):
+        data = np.convolve(data, self.kernel, 'same')
+        spectrum = np.abs(np.fft.fft(data))
+        # get major frequency of spectrum
+        freq = np.argmax(spectrum)
+        return freq
 
     def update(self, data):
         '''
@@ -40,7 +42,7 @@ class Game:
             self.game_state = 0
             self.cursor.reset()
         elif self.game_state == 1:
-            freq = calculate_frequency(data)
+            freq = self.calculate_frequency(data)
             self.cursor.update(freq)
             self.pattern.check_hit(self.cursor.body.x, freq)
             self.pattern.update()

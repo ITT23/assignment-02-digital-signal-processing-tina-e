@@ -1,4 +1,5 @@
 import numpy as np
+from scipy import signal
 
 
 class StreamAnalyzer:
@@ -6,7 +7,11 @@ class StreamAnalyzer:
         self.silence = 0
         self.frequencies = []
         self.registration = []
+        self.kernel = signal.gaussian(10, 3)
+        self.kernel /= np.sum(self.kernel)
+
     def calculate_frequency(self, data):
+        data = np.convolve(data, self.kernel, 'same')
         spectrum = np.abs(np.fft.fft(data))
         # get major frequency of spectrum
         freq = np.argmax(spectrum)
@@ -60,4 +65,3 @@ class StreamAnalyzer:
                 self.registration = []
                 return 'UP'
         return 'NONE'
-
