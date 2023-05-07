@@ -1,3 +1,5 @@
+import os.path
+
 import numpy as np
 from Cursor import Cursor
 from SongPattern import SongPattern
@@ -22,7 +24,7 @@ class Game:
         self.game_state = -1
         self.intro_width = window_width / 8
         self.width = window_width - self.intro_width
-        self.background = sprite.Sprite(img=resource.image('assets/background.jpg'))
+        self.background = sprite.Sprite(img=resource.image(os.path.normpath('assets/background.jpg')))
         self.pattern = SongPattern(self.intro_width, self.width, gui_factor)
         self.cursor = Cursor(gui_factor)
         self.menu = Menu(window_width, window_height, self.background)
